@@ -12,6 +12,7 @@ function ArticleByID() {
   const { state } = useLocation();
   const { currentUser } = useContext(userAuthorContextObj);
   const { getToken } = useAuth();
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [editArticleStatus, setEditArticleStatus] = useState(false);
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();

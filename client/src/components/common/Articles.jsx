@@ -9,7 +9,7 @@ function Articles() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { getToken } = useAuth();
-
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   //dropdown articles content
   const [categories, setCategories] = useState([
     "programming",
