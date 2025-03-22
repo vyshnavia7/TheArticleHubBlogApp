@@ -127,5 +127,5 @@ createRoot(document.getElementById("root")).render(
     <UserAuthorContext>
       <RouterProvider router={browserRouterObj} />
     </UserAuthorContext>
-  </StrictMode>
+  </StrictMode>,
 );

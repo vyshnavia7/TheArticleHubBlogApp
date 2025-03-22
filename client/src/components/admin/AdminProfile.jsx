@@ -58,11 +58,11 @@ function AdminProfile() {
         { isBlocked: !isBlocked },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       if (res.data.message === "User status updated") {
         setUsers((prev) =>
-          prev.map((u) => (u._id === id ? { ...u, isBlocked: !isBlocked } : u))
+          prev.map((u) => (u._id === id ? { ...u, isBlocked: !isBlocked } : u)),
         );
       }
     } catch (err) {
@@ -119,7 +119,7 @@ function AdminProfile() {
                   </tr>
                 ) : (
                   console.log()
-                )
+                ),
               )}
             </tbody>
           </table>

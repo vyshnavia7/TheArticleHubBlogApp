@@ -36,7 +36,7 @@ function ArticleByID() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (res.data.message === "article modified") {
@@ -52,7 +52,7 @@ function ArticleByID() {
     state.isArticleActive = false;
     let res = await axios.put(
       `${BACKEND_URL}/author-api/articles/${state.articleId}`,
-      state
+      state,
     );
     if (res.data.message === "article deleted/restored") {
       setCurrentArticle(res.data.payload);
@@ -63,7 +63,7 @@ function ArticleByID() {
     state.isArticleActive = true;
     let res = await axios.put(
       `${BACKEND_URL}/author-api/articles/${state.articleId}`,
-      state
+      state,
     );
     if (res.data.message === "article deleted/restored") {
       setCurrentArticle(res.data.payload);
@@ -74,7 +74,7 @@ function ArticleByID() {
     commentObj.nameOfUser = currentUser.firstName;
     let res = await axios.put(
       `${BACKEND_URL}/user-api/comment/${currentArticle.articleId}`,
-      commentObj
+      commentObj,
     );
     if (res.data.message === "comment added") {
       setCurrentArticle((p) => ({
@@ -94,13 +94,13 @@ function ArticleByID() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (res.data.message === "Comment deleted") {
       setCurrentArticle((prevArticle) => ({
         ...prevArticle,
         comments: prevArticle.comments.filter(
-          (comment) => comment._id !== commentId
+          (comment) => comment._id !== commentId,
         ),
       }));
     }
