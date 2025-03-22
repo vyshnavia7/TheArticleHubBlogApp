@@ -36,11 +36,11 @@ function Home() {
     let url = "";
 
     if (selectedRole === "author") {
-      url = "http://localhost:3000/author-api/author";
+      url = `${BACKEND_URL}/author-api/author`;
     } else if (selectedRole === "user") {
-      url = "http://localhost:3000/user-api/user";
+      url = `${BACKEND_URL}/user-api/user`;
     } else if (selectedRole === "admin") {
-      url = "http://localhost:3000/admin-api/users";
+      url = `${BACKEND_URL}/admin-api/users`;
     }
 
     try {

@@ -30,14 +30,11 @@ function Articles() {
     //get jwt token
     const token = await getToken();
     //make authenticated req
-    let res = await axios.get(
-      `http://localhost:3000/author-api/articles/${cat}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    let res = await axios.get(`${BACKEND_URL}/author-api/articles/${cat}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (res.data.message === "articles") {
       setArticles(res.data.payload);
     } else {

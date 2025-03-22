@@ -10,6 +10,7 @@ function PostArticle() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const { currentUser } = useContext(userAuthorContextObj);
   const navigate = useNavigate();
   async function postArticle(articleObj) {
@@ -53,10 +54,7 @@ function PostArticle() {
     //  console.log(articleObj);
 
     //make http post req to create new article in backend
-    let res = await axios.post(
-      "http://localhost:3000/author-api/article",
-      articleObj
-    );
+    let res = await axios.post(`${BACKEND_URL}/author-api/article`, articleObj);
     if (res.status === 201) {
       //navigate to articles component
       navigate(`/author-profile/${currentUser.email}/articles`);

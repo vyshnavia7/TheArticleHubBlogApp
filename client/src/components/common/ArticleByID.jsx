@@ -29,7 +29,7 @@ function ArticleByID() {
     articleAfterChanges.dateOfModification = new Date().toLocaleDateString();
 
     let res = await axios.put(
-      `http://localhost:3000/author-api/article/${articleAfterChanges.articleId}`,
+      `${BACKEND_URL}/author-api/article/${articleAfterChanges.articleId}`,
       articleAfterChanges,
       {
         headers: {
@@ -50,7 +50,7 @@ function ArticleByID() {
   async function deleteArticle() {
     state.isArticleActive = false;
     let res = await axios.put(
-      `http://localhost:3000/author-api/articles/${state.articleId}`,
+      `${BACKEND_URL}/author-api/articles/${state.articleId}`,
       state
     );
     if (res.data.message === "article deleted/restored") {
@@ -61,7 +61,7 @@ function ArticleByID() {
   async function restoreArticle() {
     state.isArticleActive = true;
     let res = await axios.put(
-      `http://localhost:3000/author-api/articles/${state.articleId}`,
+      `${BACKEND_URL}/author-api/articles/${state.articleId}`,
       state
     );
     if (res.data.message === "article deleted/restored") {
@@ -72,7 +72,7 @@ function ArticleByID() {
   async function addComment(commentObj) {
     commentObj.nameOfUser = currentUser.firstName;
     let res = await axios.put(
-      `http://localhost:3000/user-api/comment/${currentArticle.articleId}`,
+      `${BACKEND_URL}/user-api/comment/${currentArticle.articleId}`,
       commentObj
     );
     if (res.data.message === "comment added") {
@@ -87,7 +87,7 @@ function ArticleByID() {
   async function deleteComment(commentId) {
     const token = await getToken();
     let res = await axios.put(
-      `http://localhost:3000/user-api/comments/${commentId}`,
+      `${BACKEND_URL}/user-api/comments/${commentId}`,
       { commentId },
       {
         headers: {
