@@ -8,6 +8,7 @@ function AdminProfile() {
   const { getToken, signOut } = useAuth();
   const { user } = useUser();
   const navigate = useNavigate();
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   // useEffect(() => {
   //     if(currentUser?.isBlocked)
   //      {
@@ -20,7 +21,7 @@ function AdminProfile() {
   async function getUserAuthors() {
     try {
       const token = await getToken();
-      const res = await axios.get("http://localhost:3000/admin-api/users", {
+      const res = await axios.get(`${BACKEND_URL}/admin-api/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -53,7 +54,7 @@ function AdminProfile() {
     try {
       const token = await getToken();
       const res = await axios.put(
-        `http://localhost:3000/admin-api/users/block/${id}`,
+        `${BACKEND_URL}/admin-api/users/block/${id}`,
         { isBlocked: !isBlocked },
         {
           headers: { Authorization: `Bearer ${token}` },
