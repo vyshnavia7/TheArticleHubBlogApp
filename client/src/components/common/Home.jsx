@@ -1,5 +1,4 @@
 import { useContext, useState, useEffect } from "react";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import axios from "axios";
 import { userAuthorContextObj } from "../../contexts/UserAuthorContext";
 import { useUser } from "@clerk/clerk-react";
@@ -11,7 +10,7 @@ function Home() {
   const [error, setError] = useState("");
   const [isRoleSelected, setIsRoleSelected] = useState(false); // To track first correct role selection
   const navigate = useNavigate();
-
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     if (currentUser?.isBlocked) {
       navigate("/blocked", { replace: true });
