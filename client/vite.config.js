@@ -6,6 +6,6 @@ export default defineConfig({
     outDir: "dist"  // ✅ Ensure Vercel picks up the correct build folder
   },
   server: {
-    port: 3000
+    historyApiFallback: true,
   }
 });
