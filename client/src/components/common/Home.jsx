@@ -45,7 +45,7 @@ function Home() {
     try {
       res = await axios.post(url, updatedUser);
       let { message, payload } = res.data;
-
+      console.log("hi:", payload);
       if (message === selectedRole) {
         setCurrentUser({ ...currentUser, ...payload });
         localStorage.setItem("currentUser", JSON.stringify(payload));

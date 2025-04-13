@@ -36,7 +36,7 @@ function ArticleByID() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
     if (res.data.message === "article modified") {
@@ -52,7 +52,7 @@ function ArticleByID() {
     state.isArticleActive = false;
     let res = await axios.put(
       `${BACKEND_URL}/author-api/articles/${state.articleId}`,
-      state,
+      state
     );
     if (res.data.message === "article deleted/restored") {
       setCurrentArticle(res.data.payload);
@@ -63,49 +63,63 @@ function ArticleByID() {
     state.isArticleActive = true;
     let res = await axios.put(
       `${BACKEND_URL}/author-api/articles/${state.articleId}`,
-      state,
+      state
     );
     if (res.data.message === "article deleted/restored") {
       setCurrentArticle(res.data.payload);
     }
   }
 
+  //add comment by user
   async function addComment(commentObj) {
+    //add name of user to comment obj(to match with comment schema)
     commentObj.nameOfUser = currentUser.firstName;
+    commentObj.profileImageUrl = currentUser.profileImageUrl
+      ? currentUser.profileImageUrl
+      : "https://static.vecteezy.com/system/resources/previews/009/734/564/non_2x/default-avatar-profile-icon-of-social-media-user-vector.jpg";
+    console.log(commentObj);
+    //http put req(to add  comment to comments array in backend)
     let res = await axios.put(
       `${BACKEND_URL}/user-api/comment/${currentArticle.articleId}`,
-      commentObj,
+      commentObj
     );
-    if (res.data.message === "comment added") {
-      setCurrentArticle((p) => ({
-        ...p,
-        comments: [...p.comments, res.data.payload],
-      }));
+    if (res.data.message === "Comment Added") {
+      console.log("comment added");
       setCommentStatus(res.data.message);
+      setCurrentArticle(res.data.payload);
       reset();
     }
   }
   async function deleteComment(commentId) {
-    const token = await getToken();
-    let res = await axios.put(
-      `${BACKEND_URL}/user-api/comments/${commentId}`,
-      { commentId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    if (res.data.message === "Comment deleted") {
-      setCurrentArticle((prevArticle) => ({
-        ...prevArticle,
-        comments: prevArticle.comments.filter(
-          (comment) => comment._id !== commentId,
-        ),
-      }));
+    try {
+      const token = await getToken();
+      if (!token) {
+        console.error("Authentication token missing");
+        return;
+      }
+      const res = await axios.delete(
+        `${BACKEND_URL}/user-api/comment/${currentArticle.articleId}/${commentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.data.message === "comment deleted") {
+        setCurrentArticle((prevArticle) => ({
+          ...prevArticle,
+          comments: prevArticle.comments.filter(
+            (comment) => comment._id !== commentId
+          ),
+        }));
+      }
+    } catch (error) {
+      console.error(
+        "Error deleting comment:",
+        error.response?.data || error.message
+      );
     }
   }
-
   return (
     <div>
       {!editArticleStatus ? (
@@ -113,64 +127,69 @@ function ArticleByID() {
           <div className="d-flex justify-content-between mt-4">
             <div className=" container mb-5 author-block w-100 px-4 py-2 rounded-2 d-flex justify-content-between align-items-center">
               <div className="hdr">
-                <p className="display-5 me-4 title fw-bold">{state.title}</p>
+                <p className="display-5 me-4 title fw-bold">
+                  {currentArticle.title}
+                </p>
                 <div className="py-3 d-flex">
                   <small className="text-secondary me-4 fw-bold">
-                    Created on: {state.dateOfCreation}
+                    Created on: {currentArticle.dateOfCreation}
                   </small>
                   <small className="text-secondary me-4 fw-bold">
-                    Modified on: {state.dateOfModification}
+                    Modified on: {currentArticle.dateOfModification}
                   </small>
                 </div>
               </div>
               <div className="author-details text-center">
                 <img
-                  src={state.authorData.profileImageUrl}
+                  src={currentArticle.authorData.profileImageUrl}
                   width="30"
                   height="30"
                   className="rounded-circle"
                   alt=""
                 />
-                <p className="fw-bold mt-2">{state.authorData.nameOfAuthor}</p>
+                <p className="fw-bold mt-2">
+                  {currentArticle.authorData.nameOfAuthor}
+                </p>
               </div>
             </div>
 
-            {currentUser.role === "author" && (
-              <div className="d-flex me-2 xy">
-                <button
-                  className="me-2 btn btn-light  deleditbtns mt-5"
-                  onClick={enableEdit}
-                >
-                  <FaEdit className="text-warning" />
-                </button>
-                {state.isArticleActive ? (
+            {currentUser.role === "author" &&
+              currentUser.email === currentArticle.authorData.email && (
+                <div className="d-flex me-2 xy">
                   <button
-                    className="me-2 btn btn-light deleditbtns mt-5"
-                    onClick={deleteArticle}
+                    className="me-2 btn btn-light  deleditbtns mt-5"
+                    onClick={enableEdit}
                   >
-                    <MdDelete className="text-danger fs-4" />
+                    <FaEdit className="text-warning" />
                   </button>
-                ) : (
-                  <button
-                    className="me-2 btn btn-light"
-                    onClick={restoreArticle}
-                  >
-                    <MdRestore className="text-info fs-4" />
-                  </button>
-                )}
-              </div>
-            )}
+                  {currentArticle.isArticleActive ? (
+                    <button
+                      className="me-2 btn btn-light deleditbtns mt-5"
+                      onClick={deleteArticle}
+                    >
+                      <MdDelete className="text-danger fs-4" />
+                    </button>
+                  ) : (
+                    <button
+                      className="me-2 btn btn-light"
+                      onClick={restoreArticle}
+                    >
+                      <MdRestore className="text-info fs-4" />
+                    </button>
+                  )}
+                </div>
+              )}
           </div>
           <p
             className="cont mt-3 article-content"
             style={{ whiteSpace: "pre-line" }}
           >
-            {state.content}
+            {currentArticle.content}
           </p>
           {/* Render comments */}
           <div className="comments-section">
             <p className="fw-bold mx-5 fs-4">Comments</p>
-            {currentArticle?.comments && currentArticle?.comments.length > 0 ? (
+            {currentArticle?.comments.length > 0 ? (
               currentArticle?.comments?.map((commentObj) => (
                 <div
                   key={commentObj._id}
@@ -205,7 +224,7 @@ function ArticleByID() {
               <p className="mx-5">No comments yet..</p>
             )}
           </div>
-          <h6>{commentStatus}</h6>
+          {/* <h6>{commentStatus}</h6> */}
           {currentUser.role === "user" && (
             <form onSubmit={handleSubmit(addComment)}>
               <p className="mx-5 fw-medium mt-4 fs-5">Add Comments</p>
@@ -233,7 +252,7 @@ function ArticleByID() {
               type="text"
               className="form-control"
               id="title"
-              defaultValue={state.title}
+              defaultValue={currentArticle.title}
               {...register("title")}
             />
           </div>
@@ -263,10 +282,9 @@ function ArticleByID() {
               className="form-control"
               id="content"
               rows="10"
-              defaultValue={state.content}
+              defaultValue={currentArticle.content}
             ></textarea>
           </div>
-
           <div className="text-end">
             <button type="submit" className="btn btn-success fw-bold">
               Save
@@ -274,6 +292,23 @@ function ArticleByID() {
           </div>
         </form>
       )}
+      <div
+        className="toast-container position-fixed bottom-0 end-0 p-3"
+        style={{ zIndex: 9999 }}
+      >
+        {commentStatus && (
+          <div className="toast align-items-center text-bg-danger border-0 show">
+            <div className="d-flex">
+              <div className="toast-body">{commentStatus}</div>
+              <button
+                type="button"
+                className="btn-close btn-close-white me-2 m-auto"
+                onClick={() => setCommentStatus("")}
+              ></button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

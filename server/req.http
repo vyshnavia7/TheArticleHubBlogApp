@@ -129,3 +129,5 @@ Content-Type: application/json
      "lastName":"VYSHNAVI",
      "email":"23071a0570@vnrvjiet.in"
 }
+###
+DELETE  http://localhost:3000/user-api/comments/67fb55a69fde79a0a927f625

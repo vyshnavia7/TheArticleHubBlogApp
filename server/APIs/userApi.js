@@ -14,50 +14,61 @@ const Article = require("../models/articleModel");
 //     res.send({message:"users",paylohttp://localhost:5173/ad:usersList})
 // })
 
+userApp.get("/article/:articleId", async (req, res) => {
+  try {
+    const articleId = req.params.articleId;
+    
+    // Find the article by ID
+    const article = await Article.findById(articleId);
+    
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    // Send back the article with its comments
+    res.status(200).json({ message: "Article fetched successfully", payload: article });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching article" });
+  }
+});
+
 //create new user
 userApp.post("/user", expressAsyncHandler(createUserOrAuthor));
 
-//add comment
-userApp.put(
-  "/comment/:articleId",
-  expressAsyncHandler(async (req, res) => {
-    //get comment obj
-    const commentObj = req.body;
-    console.log(commentObj, req.params.articleId);
-    //add comment obj to comments array of article
-    const articleWithComments = await Article.findOneAndUpdate(
-      { articleId: req.params.articleId }, //condtion
-      { $push: { comments: commentObj } }, //pushed to comments array
-      { returnOriginal: false },
-    ); //returns latest doc
-    res
-      .status(200)
-      .send({ message: "added comment", payload: articleWithComments });
-  }),
-);
+
+//add comment(it is put req)
+userApp.put('/comment/:articleId',expressAsyncHandler(async(req,res)=>{
+  //get comment obj
+  const commentObj=req.body
+  console.log(commentObj);
+  //add comment obj to comments array of article
+  const articleWithComments=await Article.findOneAndUpdate({articleId:req.params.articleId},{$push:{comments:commentObj}},{returnOriginal:false})
+  //send res
+  res.status(200).send({message:"Comment Added",payload:articleWithComments})
+
+}))
 
 //delete comment
-userApp.put(
-  "/comments/:commentId",
-  expressAsyncHandler(async (req, res) => {
-    const comId = req.params.commentId;
-    if (!ObjectId.isValid(comId)) {
-      return res.status(400).json({ error: "Invalid Comment ID format" });
-    }
-    const r = await Article.findOneAndUpdate(
-      {
-        "comments._id": new ObjectId(comId),
-      },
-      { $pull: { comments: { _id: new ObjectId(comId) } } },
-      { new: true },
-    );
-    if (!r) {
-      return res
-        .status(404)
-        .json({ message: "Comment not found or already deleted" });
-    }
-    res.json({ message: "Comment deleted", payload: r });
-  }),
-);
+userApp.delete('/comment/:articleId/:commentId',expressAsyncHandler(async(req,res)=>{
+  const {articleId,commentId}=req.params;
+  try{
+      const updatedArticle = await Article.findOneAndUpdate(
+          { articleId },
+          { $pull: { comments: { _id: commentId } } }, // Remove the comment from the array
+          { returnOriginal: false }
+      );
 
-module.exports = userApp;
+      if (!updatedArticle) {
+          return res.status(404).send({ message: "Article not found" });
+      }
+
+      res.send({ message: "comment deleted", payload: updatedArticle });
+  }catch(error){
+      res.status(500).send({message:"Error deleting comment",error:error.message})
+  }
+}))
+
+
+
+module.exports=userApp;

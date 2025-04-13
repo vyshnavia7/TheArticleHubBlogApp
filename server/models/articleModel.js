@@ -20,20 +20,22 @@ const authorDataSchema = new mongoose.Schema(
 //create user comment schema
 const userCommentSchema = new mongoose.Schema(
   {
-    nameOfUser: {
-      type: String,
-      required: true,
-    },
-    comment: {
-      type: String,
-      required: true,
-    },
+    nameOfUser:{
+      type:String,
+      required:true
+  },
+  comment:{
+      type:String,
+      required:true
+  },
+  profileImageUrl:{
+      type:String
+  },
     isCommentActive: {
       type: Boolean,
       required: true,
     },
-  },
-  { strict: "throw" },
+    }
 );
 //create Article Schema
 const articleSchema = new mongoose.Schema(
